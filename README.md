@@ -96,4 +96,10 @@ todo-crud-api/
 ├── package.json
 └── README.md
 ```
+## Swagger UI
 
+Open `http://localhost:3000/docs` after starting the server. Every endpoint is listed
+with a "Try it out" button — you can run the full CRUD cycle (create, list, update,
+delete a task) without touching curl.
+
+![Swagger UI Screenshot](./swagger-screenshot.jpeg)
