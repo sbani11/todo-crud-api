@@ -5,8 +5,14 @@ const PORT = 3000;
 // Middleware biar bisa baca JSON dari request body nanti
 app.use(express.json());
 
+// Ganti endpoint '/' yang lama jadi ini:
 app.get('/', (req, res) => {
-  res.send('Hello Server!');
+  res.status(200).json({ name: "Task API", version: "1.0", endpoints: ["/tasks"] });
+});
+
+// Tambah endpoint health check
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
 app.listen(PORT, () => {
