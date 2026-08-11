@@ -58,6 +58,35 @@ app.post('/tasks', (req, res) => {
   res.status(201).json(newTask);
 });
 
+// Update task
+app.put('/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const task = tasks.find(t => t.id === id);
+
+  if (!task) return res.status(404).json({ error: "Task not found" });
+
+  const { title, done } = req.body;
+  if (title !== undefined && title.trim() === '') {
+    return res.status(400).json({ error: "Title cannot be empty" });
+  }
+
+  if (title !== undefined) task.title = title.trim();
+  if (done !== undefined) task.done = done;
+
+  res.status(200).json(task);
+});
+
+// Hapus task
+app.delete('/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const index = tasks.findIndex(t => t.id === id);
+
+  if (index === -1) return res.status(404).json({ error: "Task not found" });
+
+  tasks.splice(index, 1);
+  res.status(204).send(); // 204 gak perlu kirim JSON body
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
