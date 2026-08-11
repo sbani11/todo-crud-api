@@ -6,7 +6,7 @@ const openapiSpec = require('./openapi.json');
 
 app.use(express.json());
 
-// Endpoint Root & Health dari Stage 1
+
 app.get('/', (req, res) => {
   res.status(200).json({ name: "Task API", version: "1.0", endpoints: ["/tasks"] });
 });
@@ -15,28 +15,23 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-// ==========================================
-// STAGE 2: Read Endpoints
-// ==========================================
-
-// 1. Data sementara (In-memory storage) dengan 3 contoh task
 let tasks = [
   { id: 1, title: 'Learn Express', done: true },
   { id: 2, title: 'Build CRUD API', done: false },
   { id: 3, title: 'Push to GitHub', done: false }
 ];
 
-// 2. GET /tasks - Ambil semua task
+
 app.get('/tasks', (req, res) => {
   res.status(200).json(tasks);
 });
 
-// 3. GET /tasks/:id - Ambil 1 task berdasarkan ID
+
 app.get('/tasks/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
   const task = tasks.find(t => t.id === id);
 
-  // Jika task dengan ID tersebut tidak ditemukan, kembalikan status 404
+
   if (!task) {
     return res.status(404).json({ error: `Task ${id} not found` });
   }
@@ -86,7 +81,7 @@ app.delete('/tasks/:id', (req, res) => {
   if (index === -1) return res.status(404).json({ error: "Task not found" });
 
   tasks.splice(index, 1);
-  res.status(204).send(); // 204 gak perlu kirim JSON body
+  res.status(204).send();
 });
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
