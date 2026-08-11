@@ -2,17 +2,44 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
-// Middleware biar bisa baca JSON dari request body nanti
 app.use(express.json());
 
-// Ganti endpoint '/' yang lama jadi ini:
+// Endpoint Root & Health dari Stage 1
 app.get('/', (req, res) => {
   res.status(200).json({ name: "Task API", version: "1.0", endpoints: ["/tasks"] });
 });
 
-// Tambah endpoint health check
 app.get('/health', (req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+// ==========================================
+// STAGE 2: Read Endpoints
+// ==========================================
+
+// 1. Data sementara (In-memory storage) dengan 3 contoh task
+let tasks = [
+  { id: 1, title: 'Learn Express', done: true },
+  { id: 2, title: 'Build CRUD API', done: false },
+  { id: 3, title: 'Push to GitHub', done: false }
+];
+
+// 2. GET /tasks - Ambil semua task
+app.get('/tasks', (req, res) => {
+  res.status(200).json(tasks);
+});
+
+// 3. GET /tasks/:id - Ambil 1 task berdasarkan ID
+app.get('/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const task = tasks.find(t => t.id === id);
+
+  // Jika task dengan ID tersebut tidak ditemukan, kembalikan status 404
+  if (!task) {
+    return res.status(404).json({ error: `Task ${id} not found` });
+  }
+
+  res.status(200).json(task);
 });
 
 app.listen(PORT, () => {
