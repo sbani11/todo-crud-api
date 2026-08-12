@@ -128,4 +128,4 @@ SELECT COUNT(*) FROM tasks;
 ```
 
 ### DB Browser Screenshot
-![DB Browser Screenshot](./db-browser-screenshot.png)
+![DB Browser Screenshot](./db-browser-screenshot1.png)
