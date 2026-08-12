@@ -80,32 +80,47 @@ app.post('/tasks', (req, res) => {
 });
 
 // Update task
+// Update task
 app.put('/tasks/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const task = tasks.find(t => t.id === id);
-
-  if (!task) return res.status(404).json({ error: "Task not found" });
+  
+  // Cek apakah data task-nya ada di database
+  const existingTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  if (!existingTask) {
+    return res.status(404).json({ error: `Task ${id} not found` });
+  }
 
   const { title, done } = req.body;
-  if (title !== undefined && title.trim() === '') {
+  
+  // Validasi jika title dikirim tapi string kosong
+  if (title !== undefined && (typeof title !== 'string' || title.trim() === '')) {
     return res.status(400).json({ error: "Title cannot be empty" });
   }
 
-  if (title !== undefined) task.title = title.trim();
-  if (done !== undefined) task.done = done;
+  const newTitle = title !== undefined ? title.trim() : existingTask.title;
+  const newDone = done !== undefined ? (done ? 1 : 0) : existingTask.done;
 
-  res.status(200).json(task);
+  // Jalankan query UPDATE
+  db.prepare('UPDATE tasks SET title = ?, done = ? WHERE id = ?').run(newTitle, newDone, id);
+
+  // Ambil data terbaru dari database untuk dikembalikan sebagai respon
+  const updatedTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  res.status(200).json(formatTask(updatedTask));
 });
 
 // Hapus task
 app.delete('/tasks/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const index = tasks.findIndex(t => t.id === id);
+  
+  // Jalankan query DELETE
+  const info = db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
 
-  if (index === -1) return res.status(404).json({ error: "Task not found" });
+  // info.changes bernilai 0 jika tidak ada baris yang terhapus (ID tidak ditemukan)
+  if (info.changes === 0) {
+    return res.status(404).json({ error: `Task ${id} not found` });
+  }
 
-  tasks.splice(index, 1);
-  res.status(204).send();
+  res.status(204).send(); // 204 No Content
 });
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
