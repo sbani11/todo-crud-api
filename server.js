@@ -42,20 +42,20 @@ const formatTask = (task) => ({ ...task, done: Boolean(task.done) });
 
 
 app.get('/tasks', (req, res) => {
-  res.status(200).json(tasks);
+  const rows = db.prepare('SELECT * FROM tasks').all();
+  res.status(200).json(rows.map(formatTask));
 });
-
 
 app.get('/tasks/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const task = tasks.find(t => t.id === id);
+  // Ambil pakai query parameter (?) biar aman
+  const row = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
 
-
-  if (!task) {
+  if (!row) {
     return res.status(404).json({ error: `Task ${id} not found` });
   }
 
-  res.status(200).json(task);
+  res.status(200).json(formatTask(row));
 });
 
 // Tambah task baru
