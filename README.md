@@ -125,4 +125,4 @@ The database file is automatically created at `./tasks.db` upon running the serv
 ```sql
 SELECT COUNT(*) FROM tasks;
 
-![DB Screenshot](./db-browser-screenshot.png)
+![DB Browser Screenshot](./db-browser-screenshot.png)
