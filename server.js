@@ -62,15 +62,20 @@ app.get('/tasks/:id', (req, res) => {
 app.post('/tasks', (req, res) => {
   const { title } = req.body;
 
-  // Validasi: title gak boleh kosong
   if (!title || typeof title !== 'string' || title.trim() === '') {
     return res.status(400).json({ error: "Title is required" });
   }
 
-  const nextId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
-  const newTask = { id: nextId, title: title.trim(), done: false };
+  // Insert ke SQLite
+  const info = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)').run(title.trim(), 0);
+
+  // Ambil ID yang baru aja dibikin sama database
+  const newTask = {
+    id: info.lastInsertRowid,
+    title: title.trim(),
+    done: false
+  };
   
-  tasks.push(newTask);
   res.status(201).json(newTask);
 });
 
