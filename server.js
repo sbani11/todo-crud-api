@@ -3,6 +3,7 @@ const app = express();
 const PORT = 3000;
 const swaggerUi = require('swagger-ui-express');
 const openapiSpec = require('./openapi.json');
+const Database = require('better-sqlite3');
 
 app.use(express.json());
 
@@ -15,11 +16,29 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-let tasks = [
-  { id: 1, title: 'Learn Express', done: true },
-  { id: 2, title: 'Build CRUD API', done: false },
-  { id: 3, title: 'Push to GitHub', done: false }
-];
+// Buka database (otomatis bikin file tasks.db kalau belum ada)
+const db = new Database('tasks.db');
+
+// Bikin tabel kalau belum ada
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    done INTEGER DEFAULT 0
+  )
+`);
+
+// Seed 3 contoh task cuma kalau tabelnya masih kosong
+const countResult = db.prepare('SELECT COUNT(*) AS count FROM tasks').get();
+if (countResult.count === 0) {
+  const insert = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)');
+  insert.run('Learn Express', 1); // 1 = true
+  insert.run('Build CRUD API', 0); // 0 = false
+  insert.run('Push to GitHub', 0);
+}
+
+// Helper untuk ubah 1/0 dari SQLite jadi true/false di JSON balasan API
+const formatTask = (task) => ({ ...task, done: Boolean(task.done) });
 
 
 app.get('/tasks', (req, res) => {
