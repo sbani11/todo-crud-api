@@ -103,3 +103,26 @@ with a "Try it out" button — you can run the full CRUD cycle (create, list, up
 delete a task) without touching curl.
 
 ![Swagger UI Screenshot](./swagger-screenshot.jpeg)
+
+## 🗄️ Database Integration (SQLite)
+
+In Week 3, the in-memory array storage was replaced with a real **SQLite** database (`better-sqlite3` library).
+
+### Why SQLite?
+- **Single-file database:** Zero external server configuration needed.
+- **Persistence:** Data survives server restarts.
+- **Lightweight & Fast:** Perfect for local testing and lightweight applications.
+
+### Database Location & Schema
+The database file is automatically created at `./tasks.db` upon running the server.
+
+**Table Schema (`tasks`):**
+- `id` (INTEGER, PRIMARY KEY, AUTOINCREMENT)
+- `title` (TEXT, NOT NULL)
+- `done` (INTEGER, DEFAULT 0)
+
+### Manual Query Executed (Stage 4)
+```sql
+SELECT COUNT(*) FROM tasks;
+
+![DB Screenshot](.db-browser-screenshot.png)
