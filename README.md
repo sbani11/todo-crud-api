@@ -122,7 +122,10 @@ The database file is automatically created at `./tasks.db` upon running the serv
 - `done` (INTEGER, DEFAULT 0)
 
 ### Manual Query Executed (Stage 4)
+
 ```sql
 SELECT COUNT(*) FROM tasks;
+```
 
+### DB Browser Screenshot
 ![DB Browser Screenshot](./db-browser-screenshot.png)
